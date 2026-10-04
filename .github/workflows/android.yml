@@ -1,0 +1,47 @@
+name: android
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'app/**'
+      - '.github/workflows/android.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: '3.24.5'
+
+      - name: Scaffold android platform
+        run: |
+          set -e
+          cd app
+          flutter create --platforms=android --org pro.linage --project-name linage_proot /tmp/scaffold
+          cp -r /tmp/scaffold/android ./android
+          ls android
+
+      - name: Pub get
+        run: cd app && flutter pub get
+
+      - name: Build APK
+        run: cd app && flutter build apk --release
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: linage-proot-apk
+          path: app/build/app/outputs/flutter-apk/app-release.apk
