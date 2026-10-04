@@ -440,7 +440,7 @@ class _SubsPageState extends State<SubsPage> {
     try {
       String content = v;
       if (v.startsWith('http://') || v.startsWith('https://')) {
-        final r = await http.get(Uri.parse(v)).timeout(const Duration(seconds: 15));
+        final r = await http.get(Uri.parse(v), headers: {'User-Agent': 'Happ/1.0', 'Accept': '*/*'}).timeout(const Duration(seconds: 15));
         if (r.statusCode != 200) {
           _toast('HTTP ${r.statusCode}', err: true);
           return;
